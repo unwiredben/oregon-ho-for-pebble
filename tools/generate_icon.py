@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ben Combee
+# SPDX-License-Identifier: MIT
+# See LICENSE in the repository root for the full license text.
+
 """Generate the 25-pixel launcher icon from the watchface's wagon design."""
 from pathlib import Path
 

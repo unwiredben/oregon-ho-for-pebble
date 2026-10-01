@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 Ben Combee
+ * SPDX-License-Identifier: MIT
+ * See LICENSE in the repository root for the full license text.
+ */
+
 #pragma once
 #include <pebble.h>
 #include "trail.h"

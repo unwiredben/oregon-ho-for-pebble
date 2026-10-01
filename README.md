@@ -120,3 +120,7 @@ succeeds with no C compiler warnings.
 - `src/c/trail.c`: travel animation state, landmarks and event timing.
 - `src/c/scene.c`: pixel lettering, sprites and display layout.
 - `tests/trail_test.c`: platform-independent travel and clock checks.
+
+## License
+
+Copyright (c) 2026 Ben Combee. Licensed under the [MIT License](LICENSE).

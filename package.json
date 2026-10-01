@@ -1,6 +1,7 @@
 {
   "name": "oregon-ho",
   "author": "Ben Combee",
+  "license": "MIT",
   "description": "Oregon Trail-styled watchface",
   "version": "1.0.0",
   "keywords": [

@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ben Combee
+# SPDX-License-Identifier: MIT
+# See LICENSE in the repository root for the full license text.
+
 #
 # This file is the default set of rules to compile a Pebble application.
 #

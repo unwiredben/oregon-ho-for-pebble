@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ben Combee
+# SPDX-License-Identifier: MIT
+# See LICENSE in the repository root for the full license text.
+
 """Crop the screenshot's convoy into square store icons with crisp pixels."""
 from pathlib import Path
 

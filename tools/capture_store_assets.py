@@ -1,3 +1,7 @@
+# Copyright (c) 2026 Ben Combee
+# SPDX-License-Identifier: MIT
+# See LICENSE in the repository root for the full license text.
+
 """Capture native-resolution store PNGs and GIFs using the Pebble Tool environment."""
 import argparse
 import json
