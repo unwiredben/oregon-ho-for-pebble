@@ -36,9 +36,20 @@ void trail_init(Trail *trail, uint32_t seed) {
   memset(trail, 0, sizeof(*trail));
   trail->random = seed;
   trail->event_wait = 24000 / TRAIL_FRAME_INTERVAL_MS;
+  trail_resume_animation(trail);
+}
+
+void trail_resume_animation(Trail *trail) {
+  trail->animation_remaining = 60000 / TRAIL_FRAME_INTERVAL_MS;
+}
+
+bool trail_animation_finished(const Trail *trail) {
+  return !trail->animation_remaining && !trail->landmark_visible &&
+      !trail->event_remaining;
 }
 
 void trail_step(Trail *trail) {
+  if (trail->animation_remaining) --trail->animation_remaining;
   trail->frame = (trail->frame + 1) % 4;
   trail->grass = (trail->grass + 1) % 32;
   trail->passage_tick = (trail->passage_tick + 1) % 320;
@@ -54,22 +65,26 @@ void trail_step(Trail *trail) {
   } else if (trail->event_wait) {
     --trail->event_wait;
   } else {
-    static const char *const names[] = {"ALICE", "BEN", "MARY", "JAMES", "SARAH", "SAM"};
-    static const char *const events[] = {
-      "%s HAS A FEVER.", "%s BROKE AN ARM.", "%s HAS DYSENTERY.",
-      "%s BROKE A LEG.", "%s HAS EXHAUSTION.", "%s IS WELL AGAIN.",
-      "%s LOST AN OX.", "%s FOUND WILD FRUIT.", "%s SHOT A BEAR.",
-      "%s HAS CHOLERA.", "%s HAD A BAD DREAM.", "%s SHOT A DEER.",
-      "%s SHOT A SQUIRREL.", "%s SHOT A MOOSE.", "%s SHOT A RABBIT.",
-      "%s SHOT A BUFFALO.", "%s FOUND MUSHROOMS.", "%s GOT CONSUMPTION."
-    };
-    unsigned name = (next_random(trail) >> 16) % (sizeof(names) / sizeof(names[0]));
-    unsigned event = (next_random(trail) >> 16) % (sizeof(events) / sizeof(events[0]));
-    snprintf(trail->message, sizeof(trail->message), events[event], names[name]);
-    trail->event_remaining = 12000 / TRAIL_FRAME_INTERVAL_MS;
-    const unsigned quiet_ticks = 40000 / TRAIL_FRAME_INTERVAL_MS;
-    trail->event_wait = quiet_ticks + (next_random(trail) >> 16) % quiet_ticks;
+    trail_refresh_message(trail);
   }
+}
+
+void trail_refresh_message(Trail *trail) {
+  static const char *const names[] = {"ALICE", "BEN", "MARY", "JAMES", "SARAH", "SAM"};
+  static const char *const events[] = {
+    "%s HAS A FEVER.", "%s BROKE AN ARM.", "%s HAS DYSENTERY.",
+    "%s BROKE A LEG.", "%s HAS EXHAUSTION.", "%s IS WELL AGAIN.",
+    "%s LOST AN OX.", "%s FOUND WILD FRUIT.", "%s SHOT A BEAR.",
+    "%s HAS CHOLERA.", "%s HAD A BAD DREAM.", "%s SHOT A DEER.",
+    "%s SHOT A SQUIRREL.", "%s SHOT A MOOSE.", "%s SHOT A RABBIT.",
+    "%s SHOT A BUFFALO.", "%s FOUND MUSHROOMS.", "%s GOT CONSUMPTION."
+  };
+  unsigned name = (next_random(trail) >> 16) % (sizeof(names) / sizeof(names[0]));
+  unsigned event = (next_random(trail) >> 16) % (sizeof(events) / sizeof(events[0]));
+  snprintf(trail->message, sizeof(trail->message), events[event], names[name]);
+  trail->event_remaining = 12000 / TRAIL_FRAME_INTERVAL_MS;
+  const unsigned quiet_ticks = 40000 / TRAIL_FRAME_INTERVAL_MS;
+  trail->event_wait = quiet_ticks + (next_random(trail) >> 16) % quiet_ticks;
 }
 
 const char *trail_event(const Trail *trail) {

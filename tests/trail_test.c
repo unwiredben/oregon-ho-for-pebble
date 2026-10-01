@@ -9,7 +9,66 @@
 #include <stdio.h>
 #include <string.h>
 
+static void test_animation_idle(void) {
+  Trail trail;
+  trail_init(&trail, 123);
+  assert(!trail_animation_finished(&trail));
+  for (unsigned i = 0; i < 119; ++i) {
+    trail_step(&trail);
+    assert(!trail_animation_finished(&trail));
+  }
+  trail_step(&trail);
+  /* The minute is over, but the first landmark still needs to pass. */
+  assert(trail.landmark_visible);
+  assert(!trail_animation_finished(&trail));
+  for (unsigned i = 0; i < 500 && !trail_animation_finished(&trail); ++i) {
+    trail_step(&trail);
+  }
+  assert(trail_animation_finished(&trail));
+  assert(!trail.landmark_visible);
+  assert(trail_event(&trail) == NULL);
+
+  /* An event also prevents stopping even when there is no landmark. */
+  trail.event_remaining = 2;
+  assert(!trail_animation_finished(&trail));
+  trail_step(&trail);
+  assert(!trail_animation_finished(&trail));
+  trail_step(&trail);
+  assert(trail_animation_finished(&trail));
+
+  Trail frozen = trail;
+  trail_refresh_message(&trail);
+  assert(trail_event(&trail) != NULL);
+  assert(trail.random != frozen.random);
+  assert(trail.frame == frozen.frame && trail.grass == frozen.grass);
+  assert(trail.passage_tick == frozen.passage_tick);
+  assert(trail.landmark == frozen.landmark);
+  assert(trail.landmark_progress == frozen.landmark_progress);
+  char message[64];
+  strcpy(message, trail_event(&trail));
+  trail_refresh_message(&trail);
+  assert(strcmp(message, trail_event(&trail)) != 0);
+
+  trail_resume_animation(&trail);
+  assert(!trail_animation_finished(&trail));
+  for (unsigned i = 0; i < 119; ++i) {
+    trail_step(&trail);
+    assert(!trail_animation_finished(&trail));
+  }
+  /* Repeated taps renew the full window, rather than adding extra timers. */
+  trail_resume_animation(&trail);
+  for (unsigned i = 0; i < 119; ++i) {
+    trail_step(&trail);
+    assert(!trail_animation_finished(&trail));
+  }
+  trail_step(&trail);
+  trail.landmark_visible = false;
+  trail.event_remaining = 0;
+  assert(trail_animation_finished(&trail));
+}
+
 int main(void) {
+  test_animation_idle();
   Trail trail;
   static const char *const route[] = {
     "Kansas River", "Big Blue River",

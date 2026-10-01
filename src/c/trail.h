@@ -30,11 +30,18 @@ typedef struct {
   bool landmark_visible;
   uint16_t landmark_progress;
   uint16_t passage_tick, event_wait, event_remaining;
+  uint16_t animation_remaining;
   uint32_t random;
   char message[64];
 } Trail;
 
 void trail_init(Trail *trail, uint32_t seed);
 void trail_step(Trail *trail);
+/* A fresh minute of animation; focus changes preserve the remaining budget. */
+void trail_resume_animation(Trail *trail);
+/* The budget is exhausted and neither scenery nor a transient event is visible. */
+bool trail_animation_finished(const Trail *trail);
+/* Replace the story without advancing any animation or scenery state. */
+void trail_refresh_message(Trail *trail);
 const char *trail_event(const Trail *trail);
 void trail_format_time(char *buffer, size_t size, int hour, int minute, bool use_24h);

@@ -17,10 +17,13 @@ events have 40–80 seconds of quiet travel between them. Landmark cycles last
 160 seconds, with 72 seconds of scrolling scenery per cycle. These are decorative
 stories, not health readings or a playable simulation.
 
-Animation runs while the watchface is visible and pauses when it loses focus.
-The clock uses minute ticks independently of animation. Continuous animation
-uses more battery than a static watchface; battery life has not been measured
-on physical hardware. No phone companion, internet access, or buttons are needed.
+Animation runs for one minute after launch or a tap gesture, then stops once
+any visible landmark and temporary story have finished. Losing focus pauses
+an active window; returning resumes it without starting a new minute. Once
+stopped, returning to the watchface leaves it still until a tap or app restart.
+The clock and story text update on minute ticks while the scene is still.
+Battery life has not been measured on physical hardware. No phone companion,
+internet access, or buttons are needed.
 
 The package includes a 25×25 black-and-white wagon launcher icon with a
 transparent background. Regenerate it with `python3 tools/generate_icon.py`
@@ -102,6 +105,25 @@ expiry, and 12/24-hour midnight/noon formatting:
 cc -std=c99 -Wall -Wextra -Werror -Isrc/c \
   tests/trail_test.c src/c/trail.c -o /tmp/oregon-ho-test
 /tmp/oregon-ho-test
+
+cc -std=c99 -Wall -Wextra -Werror -ffunction-sections -fdata-sections \
+  -Itests/sdk -Isrc/c tests/watchface_test.c src/c/trail.c \
+  -Wl,--gc-sections -o /tmp/oregon-ho-watchface-test
+/tmp/oregon-ho-watchface-test
+```
+
+The lifecycle checks exercise the animation cutoff, focus persistence, idle
+clock/story ticks, and repeated taps using host substitutes for SDK timers and
+redraw requests. The four-target build checks the actual Pebble SDK interfaces.
+
+The emulator check installs the current build into temporary flash images,
+checks launch animation and landmark completion beyond the first minute,
+compares frozen scenes across minute clock/story updates, and sends a tap
+to confirm animation restarts. It saves captures in `previews/animation-idle/`:
+
+```sh
+# Run with the Python interpreter that has pebble-tool installed.
+python3 tools/verify_animation.py
 ```
 
 Built with Pebble Tool 5.0.40 and SDK 4.33.1. All four targets were installed
@@ -120,6 +142,7 @@ succeeds with no C compiler warnings.
 - `src/c/trail.c`: travel animation state, landmarks and event timing.
 - `src/c/scene.c`: pixel lettering, sprites and display layout.
 - `tests/trail_test.c`: platform-independent travel and clock checks.
+- `tests/watchface_test.c`: animation timer, focus, tap, and minute tick checks.
 
 ## License
 

@@ -13,6 +13,7 @@ static Layer *s_canvas;
 static AppTimer *s_timer;
 static GFont s_status_font;
 static bool s_focused = true;
+static bool s_animation_stopped;
 static Trail s_trail;
 static char s_time[6], s_date[20];
 
@@ -39,7 +40,21 @@ static void animate(void *context) {
   if (!s_focused || !s_canvas) return;
   trail_step(&s_trail);
   layer_mark_dirty(s_canvas);
-  s_timer = app_timer_register(TRAIL_FRAME_INTERVAL_MS, animate, NULL);
+  s_animation_stopped = trail_animation_finished(&s_trail);
+  if (!s_animation_stopped) {
+    s_timer = app_timer_register(TRAIL_FRAME_INTERVAL_MS, animate, NULL);
+  }
+}
+
+static void tapped(AccelAxisType axis, int32_t direction) {
+  (void)axis;
+  (void)direction;
+  if (!s_focused || !s_canvas) return;
+  trail_resume_animation(&s_trail);
+  s_animation_stopped = false;
+  if (!s_timer) {
+    s_timer = app_timer_register(TRAIL_FRAME_INTERVAL_MS, animate, NULL);
+  }
 }
 
 static void focus_changed(bool focused) {
@@ -49,13 +64,16 @@ static void focus_changed(bool focused) {
     s_timer = NULL;
   } else if (focused && s_canvas && !s_timer) {
     update_time();
-    s_timer = app_timer_register(TRAIL_FRAME_INTERVAL_MS, animate, NULL);
+    if (!s_animation_stopped) {
+      s_timer = app_timer_register(TRAIL_FRAME_INTERVAL_MS, animate, NULL);
+    }
   }
 }
 
 static void tick(struct tm *tick_time, TimeUnits units_changed) {
   (void)tick_time;
   (void)units_changed;
+  if (s_animation_stopped) trail_refresh_message(&s_trail);
   update_time();
 }
 
@@ -99,9 +117,11 @@ int main(void) {
   window_set_window_handlers(s_window, (WindowHandlers){.load = load, .unload = unload});
   tick_timer_service_subscribe(MINUTE_UNIT, tick);
   app_focus_service_subscribe(focus_changed);
+  accel_tap_service_subscribe(tapped);
   window_stack_push(s_window, false);
   app_event_loop();
   app_focus_service_unsubscribe();
+  accel_tap_service_unsubscribe();
   tick_timer_service_unsubscribe();
   window_destroy(s_window);
   return 0;

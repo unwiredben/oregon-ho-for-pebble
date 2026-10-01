@@ -1,0 +1,30 @@
+{
+  "basalt": {
+    "launch_animates": true,
+    "landmark_finishes_after_minute": true,
+    "idle_scene_frozen": true,
+    "idle_clock_and_story_refresh": true,
+    "tap_restarts_animation": true
+  },
+  "chalk": {
+    "launch_animates": true,
+    "landmark_finishes_after_minute": true,
+    "idle_scene_frozen": true,
+    "idle_clock_and_story_refresh": true,
+    "tap_restarts_animation": true
+  },
+  "emery": {
+    "launch_animates": true,
+    "landmark_finishes_after_minute": true,
+    "idle_scene_frozen": true,
+    "idle_clock_and_story_refresh": true,
+    "tap_restarts_animation": true
+  },
+  "gabbro": {
+    "launch_animates": true,
+    "landmark_finishes_after_minute": true,
+    "idle_scene_frozen": true,
+    "idle_clock_and_story_refresh": true,
+    "tap_restarts_animation": true
+  }
+}
