@@ -1,0 +1,42 @@
+{
+  "basalt": {
+    "size": [
+      144,
+      168
+    ],
+    "frames": 80,
+    "duration_ms": 40000,
+    "unique_frames": 80,
+    "bytes": 203236
+  },
+  "chalk": {
+    "size": [
+      180,
+      180
+    ],
+    "frames": 80,
+    "duration_ms": 40000,
+    "unique_frames": 80,
+    "bytes": 244128
+  },
+  "emery": {
+    "size": [
+      200,
+      228
+    ],
+    "frames": 80,
+    "duration_ms": 40000,
+    "unique_frames": 80,
+    "bytes": 302206
+  },
+  "gabbro": {
+    "size": [
+      260,
+      260
+    ],
+    "frames": 80,
+    "duration_ms": 40000,
+    "unique_frames": 80,
+    "bytes": 373297
+  }
+}
