@@ -1,5 +1,6 @@
 {
   "basalt": {
+    "version": "1.2.0",
     "size": [
       144,
       168
@@ -7,9 +8,13 @@
     "frames": 80,
     "duration_ms": 40000,
     "unique_frames": 80,
-    "bytes": 203236
+    "bytes": 203578,
+    "event_frame_index": 20,
+    "event_matches_gif": true,
+    "pbw_sha256": "b0f2cdd2c8acbeeed502130011125a3a2cad11810776dcdd534e429fb08b6dfb"
   },
   "chalk": {
+    "version": "1.2.0",
     "size": [
       180,
       180
@@ -17,9 +22,13 @@
     "frames": 80,
     "duration_ms": 40000,
     "unique_frames": 80,
-    "bytes": 244128
+    "bytes": 243689,
+    "event_frame_index": 25,
+    "event_matches_gif": true,
+    "pbw_sha256": "b0f2cdd2c8acbeeed502130011125a3a2cad11810776dcdd534e429fb08b6dfb"
   },
   "emery": {
+    "version": "1.2.0",
     "size": [
       200,
       228
@@ -27,9 +36,13 @@
     "frames": 80,
     "duration_ms": 40000,
     "unique_frames": 80,
-    "bytes": 302206
+    "bytes": 303681,
+    "event_frame_index": 35,
+    "event_matches_gif": true,
+    "pbw_sha256": "b0f2cdd2c8acbeeed502130011125a3a2cad11810776dcdd534e429fb08b6dfb"
   },
   "gabbro": {
+    "version": "1.2.0",
     "size": [
       260,
       260
@@ -37,6 +50,31 @@
     "frames": 80,
     "duration_ms": 40000,
     "unique_frames": 80,
-    "bytes": 373297
+    "bytes": 374833,
+    "event_frame_index": 40,
+    "event_matches_gif": true,
+    "pbw_sha256": "b0f2cdd2c8acbeeed502130011125a3a2cad11810776dcdd534e429fb08b6dfb"
+  },
+  "icons": {
+    "icon-80x80.png": {
+      "version": "1.2.0",
+      "size": [
+        80,
+        80
+      ],
+      "bytes": 735,
+      "source": "emery/preview.gif",
+      "source_frame_index": 0
+    },
+    "icon-144x144.png": {
+      "version": "1.2.0",
+      "size": [
+        144,
+        144
+      ],
+      "bytes": 1066,
+      "source": "emery/preview.gif",
+      "source_frame_index": 0
+    }
   }
 }

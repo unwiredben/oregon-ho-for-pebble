@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 # See LICENSE in the repository root for the full license text.
 
-"""Crop the screenshot's convoy into square store icons with crisp pixels."""
+"""Crop the GIF preview's first convoy frame into square store icons."""
 from pathlib import Path
 
 from PIL import Image, ImageDraw
@@ -10,7 +10,7 @@ from PIL import Image, ImageDraw
 
 def main():
     root = Path(__file__).resolve().parents[1]
-    source = root / "store-assets/emery/01-watchface.png"
+    source = root / "store-assets/emery/preview.gif"
     with Image.open(source) as screenshot:
         screenshot = screenshot.convert("RGB")
         # Keep the complete convoy, excluding the date and progress panel.

@@ -53,6 +53,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--sdk", default="4.33.1")
     parser.add_argument("--output", type=Path, default=Path("store-assets"))
+    parser.add_argument("--event-only", action="store_true",
+                        help="Save the event screenshot and GIF preview only")
     args = parser.parse_args()
     project = Path(__file__).resolve().parents[1]
     package = json.loads((project / "package.json").read_text())
@@ -77,6 +79,8 @@ def main():
         command.pebble.send_packet(AppRunState(data=AppRunStateStart(uuid=app_uuid)))
     start = time.monotonic() + 1
     stills = {0: "01-watchface.png", 42: "02-river.png", 54: "03-event.png"}
+    if args.event_only:
+        stills = {54: "03-event.png"}
     for index in range(80):
         time.sleep(max(0, start + index * .5 - time.monotonic()))
         for platform, command in commands.items():
@@ -93,7 +97,7 @@ def main():
         manifest[platform] = {"width": images[0].width, "height": images[0].height,
                               "duration_ms": 40000, "interval_ms": 500,
                               "files": [*stills.values(), "preview.gif"]}
-        print(f"Saved {platform}: three PNGs and animated GIF", flush=True)
+        print(f"Saved {platform}: {len(stills)} PNG(s) and animated GIF", flush=True)
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
 

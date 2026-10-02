@@ -88,7 +88,10 @@ pebble install --emulator emery
 pebble screenshot --no-open --emulator emery previews/emery.png
 ```
 
-The build creates `build/oregon-ho.pbw`, containing all four targets. Replace
+The build creates `build/oregon-ho.pbw`, containing all four targets, and copies
+it to the project root as `oregon-ho-<version>.pbw` using the version in
+`package.json` (for example, `oregon-ho-1.2.0.pbw`). The root copy is refreshed
+on every successful build, including builds with no source changes. Replace
 `emery` with another target to run its emulator.
 
 The SDK 4.33.1 Gabbro emulator sometimes returned to its previous watchface

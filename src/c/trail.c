@@ -70,14 +70,19 @@ void trail_step(Trail *trail) {
 }
 
 void trail_refresh_message(Trail *trail) {
-  static const char *const names[] = {"ALICE", "BEN", "MARY", "JAMES", "SARAH", "SAM"};
+  static const char *const names[] = {
+    "ALICE", "BEN", "MARY", "JAMES", "SARAH", "SAM",
+    "ANNE", "SKYE", "ERIC", "ELI", "NAT", "LEO"
+  };
   static const char *const events[] = {
     "%s HAS A FEVER.", "%s BROKE AN ARM.", "%s HAS DYSENTERY.",
     "%s BROKE A LEG.", "%s HAS EXHAUSTION.", "%s IS WELL AGAIN.",
     "%s LOST AN OX.", "%s FOUND WILD FRUIT.", "%s SHOT A BEAR.",
     "%s HAS CHOLERA.", "%s HAD A BAD DREAM.", "%s SHOT A DEER.",
     "%s SHOT A SQUIRREL.", "%s SHOT A MOOSE.", "%s SHOT A RABBIT.",
-    "%s SHOT A BUFFALO.", "%s FOUND MUSHROOMS.", "%s GOT CONSUMPTION."
+    "%s SHOT A BUFFALO.", "%s FOUND MUSHROOMS.", "%s GOT CONSUMPTION.",
+    "%s PETTED A DOG.", "%s GOT THE SNIFFLES.", "%s SPIED A HAWK.",
+    "%s SPIED AN EAGLE.", "%s SAW A RAINBOW.", "%s MADE A FRIEND."
   };
   unsigned name = (next_random(trail) >> 16) % (sizeof(names) / sizeof(names[0]));
   unsigned event = (next_random(trail) >> 16) % (sizeof(events) / sizeof(events[0]));

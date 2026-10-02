@@ -7,7 +7,11 @@
 #
 # Feel free to customize this to your needs.
 #
+import json
 import os.path
+import shutil
+
+from waflib import Logs
 
 top = '.'
 out = 'build'
@@ -25,6 +29,16 @@ def configure(ctx):
     Universal configuration: add your change prior to calling ctx.load('pebble_sdk').
     """
     ctx.load('pebble_sdk')
+
+
+def copy_versioned_bundle(ctx):
+    with open(ctx.path.find_node('package.json').abspath()) as manifest:
+        package = json.load(manifest)
+    source = ctx.bldnode.make_node(ctx.env.BUNDLE_NAME).abspath()
+    filename = '{}-{}.pbw'.format(package['name'], package['version'])
+    destination = ctx.path.make_node(filename).abspath()
+    shutil.copyfile(source, destination)
+    Logs.info('Copied build bundle to {}'.format(filename))
 
 
 def build(ctx):
@@ -56,3 +70,4 @@ def build(ctx):
                                          'src/pkjs/**/*.json',
                                          'src/common/**/*.js']),
                    js_entry_file='src/pkjs/index.js')
+    ctx.add_post_fun(copy_versioned_bundle)

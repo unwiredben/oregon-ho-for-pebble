@@ -156,24 +156,25 @@ static void sprite(GContext *ctx, const char *const *rows, int height,
 }
 
 static void ox(GContext *ctx, int x, int ground, int scale, unsigned frame) {
-  // Both horn tips curve toward the muzzle, which faces left.
+  // Compact forward-curving horns and a broad, level muzzle face left.
   static const char *const body[] = {
-    "..BB..BB......................",
-    "....B...B.....................",
+    "..............................",
+    "..............................",
     ".....B...B....................",
-    "......B...B...................",
-    ".....TWWWWWT..................",
-    "....TWWKWWWTT..TTTTTTTTTT.....",
-    "...WWWWWWWTBTTWWWWWWWWWWWTT...",
-    "..WWWWWWWWBBBBWWWWWWWWWWWWWT..",
-    ".WWWWWWWTTBBBBWWWWWWWWWWWWWWB.",
-    "WWWWWWWT..BBBWWWWWTTWWWWWWWW..",
-    ".WWWWWT...BBBWWWWTTTWWWWWWWW..",
-    "..........TTWWWWWWTWWWWWWWWT..",
-    "...........TWWWWWWWWWWWWWWWTT.",
-    "............WWWWWWWWWWWWWWTT..",
-    "............WWW....WWWWWWWT...",
-    ".............WW.....WW..WW...."
+    ".....BT..BT...................",
+    "......TT..TT..................",
+    "......TWWWWTT.................",
+    ".....TWWWWWWTTTTTTTTTTTTT.....",
+    ".....WWKWWTTWWWWWWWWWWWWWT....",
+    "....WWWWWWWWWWWWWWWWWWWWWWT...",
+    "...TTTWWWWWWWWWWWWWWWWWWWWWT..",
+    "...TKTWWWWWWWWWWWWWWWWWWWWWT..",
+    "...TTTTTTWWWWWWWWWWWWWWWWWWT..",
+    ".......TTTWWWWWWWWWWWWWWWWWT..",
+    ".........TTWWWWWWWWWWWWWWWWT..",
+    "..........TWWWWWWWWWWWWWWWT...",
+    "...........WWWWTTTTTTWWWWWT...",
+    "...........WWWT......WWWWT...."
   };
   int y = ground - 25 * scale;
   sprite(ctx, body, ARRAY_LENGTH(body), x, y, scale);
@@ -187,21 +188,28 @@ static void ox(GContext *ctx, int x, int ground, int scale, unsigned frame) {
   }
   block(ctx, x + (tail_x - 1) * scale, y + 20 * scale, 3 * scale, 3 * scale,
       GColorWindsorTan);
-  static const int8_t stride[] = {-2, 0, 2, 0};
+  // Draw the shaded far legs first, then the near legs in the opposite stride.
+  static const int8_t stride[] = {-1, 0, 1, 0};
+  static const int8_t roots[] = {14, 25, 12, 23};
+  static const uint8_t phases[] = {0, 2, 2, 0};
   for (int leg = 0; leg < 4; ++leg) {
-    int root = (leg < 2 ? 13 : 24) + (leg % 2);
-    int step = stride[(frame + leg * 2) % 4];
-    block(ctx, x + root * scale, y + 15 * scale, 2 * scale, 3 * scale,
-          GColorWhite);
-    block(ctx, x + (root + step) * scale, y + 18 * scale, 2 * scale, 5 * scale,
-          GColorWhite);
+    int root = roots[leg];
+    int step = stride[(frame + phases[leg]) % 4];
+    GColor hide = leg < 2 ? GColorPastelYellow : GColorWhite;
+    block(ctx, x + root * scale, y + 16 * scale, 3 * scale, 3 * scale, hide);
+    block(ctx, x + (root + step) * scale, y + 19 * scale, 2 * scale, 4 * scale,
+          hide);
     block(ctx, x + (root + step - 1) * scale, y + 23 * scale, 4 * scale, scale,
           GColorWindsorTan);
   }
-  // Wooden yoke spans the stout neck; a pale top edge separates it from the hide.
-  block(ctx, x + 8 * scale, y + 7 * scale, 9 * scale, 2 * scale, GColorWindsorTan);
-  block(ctx, x + 8 * scale, y + 7 * scale, 9 * scale, scale, GColorPastelYellow);
-  block(ctx, x + 10 * scale, y + 9 * scale, 2 * scale, 5 * scale, GColorWindsorTan);
+  // A broad diagonal yoke runs from the shoulder down beneath the throat.
+  for (int row = 0; row < 8; ++row) {
+    int yoke_x = x + (14 - row) * scale;
+    int yoke_y = y + (6 + row) * scale;
+    block(ctx, yoke_x - scale, yoke_y, 5 * scale, scale, GColorBlack);
+    block(ctx, yoke_x, yoke_y, 3 * scale, scale, GColorWindsorTan);
+    block(ctx, yoke_x + 2 * scale, yoke_y, scale, scale, GColorPastelYellow);
+  }
 }
 
 static void wheel(GContext *ctx, int x, int y, int scale, unsigned frame) {

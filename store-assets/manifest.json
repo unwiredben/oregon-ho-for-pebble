@@ -5,11 +5,10 @@
     "duration_ms": 40000,
     "interval_ms": 500,
     "files": [
-      "01-watchface.png",
-      "02-river.png",
       "03-event.png",
       "preview.gif"
-    ]
+    ],
+    "version": "1.2.0"
   },
   "chalk": {
     "width": 180,
@@ -17,11 +16,10 @@
     "duration_ms": 40000,
     "interval_ms": 500,
     "files": [
-      "01-watchface.png",
-      "02-river.png",
       "03-event.png",
       "preview.gif"
-    ]
+    ],
+    "version": "1.2.0"
   },
   "emery": {
     "width": 200,
@@ -29,11 +27,10 @@
     "duration_ms": 40000,
     "interval_ms": 500,
     "files": [
-      "01-watchface.png",
-      "02-river.png",
       "03-event.png",
       "preview.gif"
-    ]
+    ],
+    "version": "1.2.0"
   },
   "gabbro": {
     "width": 260,
@@ -41,10 +38,9 @@
     "duration_ms": 40000,
     "interval_ms": 500,
     "files": [
-      "01-watchface.png",
-      "02-river.png",
       "03-event.png",
       "preview.gif"
-    ]
+    ],
+    "version": "1.2.0"
   }
 }
