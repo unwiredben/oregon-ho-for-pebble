@@ -50,3 +50,24 @@ void app_focus_service_unsubscribe(void);
 void accel_tap_service_unsubscribe(void);
 void tick_timer_service_unsubscribe(void);
 void window_destroy(Window *);
+
+#include <stddef.h>
+typedef enum { TUPLE_BYTE_ARRAY, TUPLE_CSTRING, TUPLE_UINT, TUPLE_INT } TupleType;
+typedef union { char cstring[1]; int32_t int32; uint32_t uint32; } TupleValue;
+typedef struct { uint32_t key; TupleType type; uint16_t length; TupleValue *value; } Tuple;
+typedef struct { Tuple *tuples; unsigned count; } DictionaryIterator;
+typedef enum { APP_MSG_OK, APP_MSG_BUFFER_OVERFLOW } AppMessageResult;
+extern uint32_t MESSAGE_KEY_PartyName1, MESSAGE_KEY_PartyName2,
+    MESSAGE_KEY_PartyName3, MESSAGE_KEY_PartyName4, MESSAGE_KEY_PartyName5,
+    MESSAGE_KEY_NoGuns;
+#define APP_LOG_LEVEL_WARNING 2
+Tuple *dict_find(const DictionaryIterator *, uint32_t);
+bool persist_exists(uint32_t);
+int persist_read_string(uint32_t, char *, size_t);
+bool persist_read_bool(uint32_t);
+int persist_write_string(uint32_t, const char *);
+int persist_write_bool(uint32_t, bool);
+void app_message_register_inbox_received(void (*)(DictionaryIterator *, void *));
+void app_message_register_inbox_dropped(void (*)(AppMessageResult, void *));
+AppMessageResult app_message_open(uint32_t, uint32_t);
+void app_message_deregister_callbacks(void);

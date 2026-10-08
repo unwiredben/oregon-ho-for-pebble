@@ -1,0 +1,330 @@
+{
+  "basalt": {
+    "launch": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "before-settings": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "custom-name": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "wide-name": {
+      "panel_bounds": [
+        20,
+        121,
+        123,
+        156
+      ]
+    },
+    "long-name": {
+      "panel_bounds": [
+        20,
+        114,
+        123,
+        163
+      ]
+    },
+    "unicode-name": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "five-names": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "saved-name": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "after-restart": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    },
+    "defaults-restored": {
+      "panel_bounds": [
+        20,
+        117,
+        123,
+        160
+      ]
+    }
+  },
+  "chalk": {
+    "launch": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        162
+      ]
+    },
+    "before-settings": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "custom-name": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "wide-name": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "long-name": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "unicode-name": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "five-names": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        140
+      ]
+    },
+    "saved-name": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "after-restart": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    },
+    "defaults-restored": {
+      "panel_bounds": [
+        38,
+        119,
+        141,
+        154
+      ]
+    }
+  },
+  "emery": {
+    "launch": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "before-settings": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "custom-name": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "wide-name": {
+      "panel_bounds": [
+        25,
+        171,
+        174,
+        206
+      ]
+    },
+    "long-name": {
+      "panel_bounds": [
+        25,
+        158,
+        174,
+        219
+      ]
+    },
+    "unicode-name": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "five-names": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "saved-name": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "after-restart": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    },
+    "defaults-restored": {
+      "panel_bounds": [
+        25,
+        157,
+        174,
+        220
+      ]
+    }
+  },
+  "gabbro": {
+    "launch": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        235
+      ]
+    },
+    "before-settings": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        215
+      ]
+    },
+    "custom-name": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        215
+      ]
+    },
+    "wide-name": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        207
+      ]
+    },
+    "long-name": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        221
+      ]
+    },
+    "unicode-name": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        215
+      ]
+    },
+    "five-names": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        215
+      ]
+    },
+    "saved-name": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        197
+      ]
+    },
+    "after-restart": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        215
+      ]
+    },
+    "defaults-restored": {
+      "panel_bounds": [
+        55,
+        172,
+        204,
+        197
+      ]
+    }
+  }
+}

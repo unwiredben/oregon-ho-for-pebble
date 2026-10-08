@@ -5,13 +5,16 @@
  */
 
 #include "scene.h"
+#include "event_layout.h"
 #include <string.h>
 #include <stdio.h>
 
 static GBitmap *s_convoy[4], *s_clock, *s_panel, *s_landmark, *s_raster;
 static int s_landmark_scenery = -1;
 static GColor s_palette[16];
-static char s_clock_time[6], s_clock_date[20], s_status[64];
+static char s_clock_time[6], s_clock_date[20], s_status[TRAIL_MESSAGE_BYTES];
+static char s_fitted_message[TRAIL_MESSAGE_BYTES];
+static char s_measured_word[TRAIL_NAME_BYTES + 4];
 static GRect s_panel_rect;
 static bool s_panel_valid;
 
@@ -432,6 +435,42 @@ static void landmark(GContext *ctx, int x, int ground, int scale, TrailScenery k
   }
 }
 
+typedef struct {
+  int text_width, text_height;
+} MessageFit;
+
+static GFont event_font(unsigned size) {
+  return fonts_get_system_font(size == 28 ? FONT_KEY_GOTHIC_28 :
+      size == 18 ? FONT_KEY_GOTHIC_18 : FONT_KEY_GOTHIC_14);
+}
+
+static bool message_fits(const char *message, const char *name, unsigned size, void *context) {
+  const MessageFit *fit = context;
+  GFont font = event_font(size);
+  // Multi-word names may wrap within the single panel. Check each word to
+  // prevent a very wide, unbroken name from running past the text area.
+  while (*name) {
+    while (*name == ' ') ++name;
+    size_t used = 0;
+    while (*name && *name != ' ' && used < sizeof(s_measured_word) - 1) {
+      s_measured_word[used++] = *name++;
+    }
+    s_measured_word[used] = '\0';
+    GSize word_size = graphics_text_layout_get_content_size(s_measured_word, font,
+        GRect(0, 0, 4096, 4096), GTextOverflowModeWordWrap, GTextAlignmentCenter);
+    if (word_size.w > fit->text_width) return false;
+  }
+  GSize message_size = graphics_text_layout_get_content_size(message, font,
+      GRect(0, 0, fit->text_width, 4096),
+      GTextOverflowModeWordWrap, GTextAlignmentCenter);
+  return message_size.h <= fit->text_height;
+}
+
+static void draw_fallback_text(GContext *ctx, const char *status, GRect box, int scale) {
+  const TextBlock text = wrap_text(status, box.size.w, scale);
+  draw_text_block(ctx, &text, box, scale);
+}
+
 void scene_draw(GContext *ctx, GRect bounds, const Trail *trail,
                 const char *time_text, const char *date_text, GFont status_font,
                 GPoint window_origin) {
@@ -518,7 +557,24 @@ void scene_draw(GContext *ctx, GRect bounds, const Trail *trail,
   // the inner text width so identical fonts wrap the same way.
   const int panel_width = width >= 200 ? 150 : 104;
   const int padding = 4;
-  const TextBlock text = wrap_text(status, panel_width - padding * 2, scale);
+  if (message && draw_font) {
+    int bottom = height - 2;
+#if defined(PBL_ROUND)
+    // Keep both lower panel corners inside the circle, not just its center.
+    const int radius = width / 2;
+    const int half_panel = (panel_width + 1) / 2;
+    while (bottom > height / 2 &&
+        half_panel * half_panel + (bottom - height / 2) * (bottom - height / 2)
+            >= (radius - 2) * (radius - 2)) --bottom;
+#endif
+    const int top = PBL_IF_ROUND_ELSE(ground + 1, ground);
+    MessageFit fit = {panel_width - padding * 2,
+        bottom - top - padding * 2};
+    unsigned size = event_layout_fit(trail, s_fitted_message, sizeof(s_fitted_message),
+        width >= 200 ? 28 : 18, message_fits, &fit);
+    draw_font = event_font(size ? size : 14);
+    status = s_fitted_message;
+  }
   const GSize text_size = graphics_text_layout_get_content_size(status, draw_font,
       GRect(0, 0, panel_width - padding * 2, height),
       GTextOverflowModeWordWrap, GTextAlignmentCenter);
@@ -540,9 +596,9 @@ void scene_draw(GContext *ctx, GRect bounds, const Trail *trail,
     graphics_draw_text(ctx, status, draw_font, text_box,
                        GTextOverflowModeWordWrap, GTextAlignmentCenter, NULL);
   } else {
-    draw_text_block(ctx, &text, text_box, scale);
+    draw_fallback_text(ctx, status, text_box, scale);
   }
-  snprintf(s_status, sizeof(s_status), "%s", status);
+  snprintf(s_status, sizeof(s_status), "%s", message ? message : progress);
   s_panel_rect = panel;
   cache_panel(ctx, panel, window_origin);
 }

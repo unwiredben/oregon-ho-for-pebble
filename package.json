@@ -3,12 +3,14 @@
   "author": "Ben Combee",
   "license": "MIT",
   "description": "Oregon Trail-styled watchface",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "keywords": [
     "pebble-app"
   ],
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@rebble/clay": "1.1.0"
+  },
   "pebble": {
     "displayName": "Oregon Ho!",
     "uuid": "d600d3a9-5416-41b8-ad27-4284a7c53a3b",
@@ -23,9 +25,15 @@
     "watchapp": {
       "watchface": true
     },
-    "messageKeys": [
-      "dummy"
-    ],
+    "capabilities": ["configurable"],
+    "messageKeys": {
+      "PartyName1": 1,
+      "PartyName2": 2,
+      "PartyName3": 3,
+      "PartyName4": 4,
+      "PartyName5": 5,
+      "NoGuns": 6
+    },
     "resources": {
       "media": [
         {

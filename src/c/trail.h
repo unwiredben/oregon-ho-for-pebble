@@ -11,6 +11,9 @@
 
 #define TRAIL_FRAME_INTERVAL_MS 500
 #define TRAIL_LANDMARK_COUNT 16
+#define TRAIL_PARTY_SIZE 5
+#define TRAIL_NAME_BYTES 96
+#define TRAIL_MESSAGE_BYTES 160
 
 typedef enum {
   SCENERY_FORT, SCENERY_RIVER, SCENERY_CHIMNEY_ROCK, SCENERY_ROUND_ROCK,
@@ -32,7 +35,11 @@ typedef struct {
   uint16_t passage_tick, event_wait, event_remaining;
   uint16_t animation_remaining;
   uint32_t random;
-  char message[64];
+  char names[TRAIL_PARTY_SIZE][TRAIL_NAME_BYTES + 1];
+  bool no_guns;
+  uint8_t event_id;
+  char event_name[TRAIL_NAME_BYTES + 1];
+  char message[TRAIL_MESSAGE_BYTES];
 } Trail;
 
 void trail_init(Trail *trail, uint32_t seed);
@@ -43,5 +50,14 @@ void trail_resume_animation(Trail *trail);
 bool trail_animation_finished(const Trail *trail);
 /* Replace the story without advancing any animation or scenery state. */
 void trail_refresh_message(Trail *trail);
+/* Trim whitespace/controls, uppercase ASCII, and bound at a UTF-8 boundary. */
+void trail_set_name(Trail *trail, unsigned slot, const char *name);
+/* Shorten only the selected name, preserving the full event suffix. */
+void trail_format_event(const Trail *trail, char *buffer, size_t size,
+                        size_t name_bytes);
+/* Try full name, then progressively shorter UTF-8 prefixes plus ellipsis.
+ * Return false if even an ellipsis cannot fit; buffer still contains the story. */
+bool trail_fit_event(const Trail *trail, char *buffer, size_t size,
+    bool (*fits)(const char *message, const char *name, void *context), void *context);
 const char *trail_event(const Trail *trail);
 void trail_format_time(char *buffer, size_t size, int hour, int minute, bool use_24h);

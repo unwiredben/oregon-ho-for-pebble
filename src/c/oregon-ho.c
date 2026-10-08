@@ -7,6 +7,7 @@
 #include <pebble.h>
 #include "scene.h"
 #include "trail.h"
+#include "settings.h"
 
 static Window *s_window;
 static Layer *s_canvas;
@@ -16,6 +17,10 @@ static bool s_focused = true;
 static bool s_animation_stopped;
 static Trail s_trail;
 static char s_time[6], s_date[20];
+
+static void settings_changed(void) {
+  if (s_canvas) layer_mark_dirty(s_canvas);
+}
 
 static void update_time(void) {
   time_t now = time(NULL);
@@ -113,6 +118,7 @@ int main(void) {
   trail_init(&s_trail, (uint32_t)time(NULL));
   s_window = window_create();
   if (!s_window) return 1;
+  settings_init(&s_trail, settings_changed);
   window_set_background_color(s_window, GColorBlack);
   window_set_window_handlers(s_window, (WindowHandlers){.load = load, .unload = unload});
   tick_timer_service_subscribe(MINUTE_UNIT, tick);
@@ -123,6 +129,7 @@ int main(void) {
   app_focus_service_unsubscribe();
   accel_tap_service_unsubscribe();
   tick_timer_service_unsubscribe();
+  settings_deinit();
   window_destroy(s_window);
   return 0;
 }

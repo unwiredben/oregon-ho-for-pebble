@@ -69,24 +69,114 @@ void trail_step(Trail *trail) {
   }
 }
 
+static const struct { const char *format; bool shooting; } EVENTS[] = {
+    {"%s HAS A FEVER.", false}, {"%s BROKE AN ARM.", false}, {"%s HAS DYSENTERY.", false},
+    {"%s BROKE A LEG.", false}, {"%s HAS EXHAUSTION.", false}, {"%s IS WELL AGAIN.", false},
+    {"%s LOST AN OX.", false}, {"%s FOUND WILD FRUIT.", false}, {"%s SHOT A BEAR.", true},
+    {"%s HAS CHOLERA.", false}, {"%s HAD A BAD DREAM.", false}, {"%s SHOT A DEER.", true},
+    {"%s SHOT A SQUIRREL.", true}, {"%s SHOT A MOOSE.", true}, {"%s SHOT A RABBIT.", true},
+    {"%s SHOT A BUFFALO.", true}, {"%s FOUND MUSHROOMS.", false}, {"%s GOT CONSUMPTION.", false},
+    {"%s PETTED A DOG.", false}, {"%s GOT THE SNIFFLES.", false}, {"%s SPIED A HAWK.", false},
+    {"%s SPIED AN EAGLE.", false}, {"%s SAW A RAINBOW.", false}, {"%s MADE A FRIEND.", false}
+  };
+
+/* Return the largest whole UTF-8 prefix within the requested byte budget. */
+static size_t name_prefix(const char *name, size_t bytes) {
+  size_t length = strlen(name);
+  if (bytes >= length) return length;
+  while (bytes && ((unsigned char)name[bytes] & 0xc0) == 0x80) --bytes;
+  return bytes;
+}
+
+/* ECMAScript whitespace, matching the Clay page's trim behavior. Non-ASCII
+ * spaces become ordinary spaces so blank-only names restore the default pool. */
+static size_t unicode_space_bytes(const char *text) {
+  const unsigned char *c = (const unsigned char *)text;
+  if (c[0] == 0xc2 && c[1] == 0xa0) return 2;
+  if (c[0] == 0xe1 && c[1] == 0x9a && c[2] == 0x80) return 3;
+  if (c[0] == 0xe2 && c[1] == 0x80 &&
+      ((c[2] >= 0x80 && c[2] <= 0x8a) || c[2] == 0xa8 || c[2] == 0xa9 || c[2] == 0xaf)) return 3;
+  if (c[0] == 0xe2 && c[1] == 0x81 && c[2] == 0x9f) return 3;
+  if (c[0] == 0xe3 && c[1] == 0x80 && c[2] == 0x80) return 3;
+  if (c[0] == 0xef && c[1] == 0xbb && c[2] == 0xbf) return 3;
+  return 0;
+}
+
+void trail_set_name(Trail *trail, unsigned slot, const char *name) {
+  if (slot >= TRAIL_PARTY_SIZE || !name) return;
+  while (*name) {
+    size_t space = unicode_space_bytes(name);
+    if ((unsigned char)*name <= ' ') ++name;
+    else if (space) name += space;
+    else break;
+  }
+  size_t limit = name_prefix(name, TRAIL_NAME_BYTES);
+  size_t used = 0;
+  for (size_t i = 0; i < limit; ++i) {
+    size_t space = unicode_space_bytes(name + i);
+    if (space) {
+      trail->names[slot][used++] = ' ';
+      i += space - 1;
+      continue;
+    }
+    unsigned char ch = (unsigned char)name[i];
+    if (ch < ' ' || ch == 127) continue;
+    trail->names[slot][used++] = ch >= 'a' && ch <= 'z' ? ch - ('a' - 'A') : ch;
+  }
+  while (used && trail->names[slot][used - 1] == ' ') --used;
+  trail->names[slot][used] = '\0';
+}
+
+static void format_name(const Trail *trail, char *name, size_t name_bytes) {
+  size_t used = name_prefix(trail->event_name, name_bytes);
+  memcpy(name, trail->event_name, used);
+  name[used] = '\0';
+  if (used < strlen(trail->event_name)) strcpy(name + used, "...");
+}
+
+void trail_format_event(const Trail *trail, char *buffer, size_t size,
+                        size_t name_bytes) {
+  char name[TRAIL_NAME_BYTES + 4];
+  format_name(trail, name, name_bytes);
+  snprintf(buffer, size, EVENTS[trail->event_id].format, name);
+}
+
+bool trail_fit_event(const Trail *trail, char *buffer, size_t size,
+    bool (*fits)(const char *, const char *, void *), void *context) {
+  size_t bytes = strlen(trail->event_name);
+  do {
+    char name[TRAIL_NAME_BYTES + 4];
+    format_name(trail, name, bytes);
+    trail_format_event(trail, buffer, size, bytes);
+    if (fits(buffer, name, context)) return true;
+    if (!bytes) break;
+    bytes = name_prefix(trail->event_name, bytes - 1);
+  } while (true);
+  return false;
+}
+
 void trail_refresh_message(Trail *trail) {
   static const char *const names[] = {
     "ALICE", "BEN", "MARY", "JAMES", "SARAH", "SAM",
     "ANNE", "SKYE", "ERIC", "ELI", "NAT", "LEO"
   };
-  static const char *const events[] = {
-    "%s HAS A FEVER.", "%s BROKE AN ARM.", "%s HAS DYSENTERY.",
-    "%s BROKE A LEG.", "%s HAS EXHAUSTION.", "%s IS WELL AGAIN.",
-    "%s LOST AN OX.", "%s FOUND WILD FRUIT.", "%s SHOT A BEAR.",
-    "%s HAS CHOLERA.", "%s HAD A BAD DREAM.", "%s SHOT A DEER.",
-    "%s SHOT A SQUIRREL.", "%s SHOT A MOOSE.", "%s SHOT A RABBIT.",
-    "%s SHOT A BUFFALO.", "%s FOUND MUSHROOMS.", "%s GOT CONSUMPTION.",
-    "%s PETTED A DOG.", "%s GOT THE SNIFFLES.", "%s SPIED A HAWK.",
-    "%s SPIED AN EAGLE.", "%s SAW A RAINBOW.", "%s MADE A FRIEND."
-  };
-  unsigned name = (next_random(trail) >> 16) % (sizeof(names) / sizeof(names[0]));
-  unsigned event = (next_random(trail) >> 16) % (sizeof(events) / sizeof(events[0]));
-  snprintf(trail->message, sizeof(trail->message), events[event], names[name]);
+  const char *party[TRAIL_PARTY_SIZE];
+  unsigned party_size = 0;
+  for (unsigned i = 0; i < TRAIL_PARTY_SIZE; ++i) {
+    if (trail->names[i][0]) party[party_size++] = trail->names[i];
+  }
+  unsigned name = next_random(trail) >> 16;
+  const char *selected = party_size ? party[name % party_size]
+      : names[name % (sizeof(names) / sizeof(names[0]))];
+  strcpy(trail->event_name, selected);
+
+  unsigned eligible[sizeof(EVENTS) / sizeof(EVENTS[0])];
+  unsigned count = 0;
+  for (unsigned i = 0; i < sizeof(EVENTS) / sizeof(EVENTS[0]); ++i) {
+    if (!trail->no_guns || !EVENTS[i].shooting) eligible[count++] = i;
+  }
+  trail->event_id = eligible[(next_random(trail) >> 16) % count];
+  trail_format_event(trail, trail->message, sizeof(trail->message), TRAIL_NAME_BYTES);
   trail->event_remaining = 12000 / TRAIL_FRAME_INTERVAL_MS;
   const unsigned quiet_ticks = 40000 / TRAIL_FRAME_INTERVAL_MS;
   trail->event_wait = quiet_ticks + (next_random(trail) >> 16) % quiet_ticks;
